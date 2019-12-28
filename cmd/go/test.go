@@ -22,10 +22,5 @@ func main() {
 		s,[2]acc.Div{d0,d1},[3]acc.Rev{r0,r1,r2},[2]acc.Equity{e0,e1},
 	}
 	fmt.Println(corp)
-
-	ds := []int{}
-	for _, d := range corp.Div {
-		ds = append(ds, d.VCalc())
-	}
-	fmt.Println(ds)
+	fmt.Println(corp.ICalv())
 }
