@@ -1,4 +1,4 @@
-package main
+package ledger
 
 import (
 	"encoding/csv"
@@ -6,29 +6,15 @@ import (
 	"io"
 	"log"
 	"os"
-	"path/filepath"
 )
 
-func main() {
-	home, _ := os.UserHomeDir()
-	var p string = filepath.Join(home, "Downloads", "acc.txt")
-	csv := readCsv(p)
-	//fmt.Println(csv)
-	col := []int{0, 1, 2, 3}
-	csv.cut(col)
-	//ced := csv.cutOne(1)
-	//fmt.Println(csv.getColumns())
-	//fmt.Printf("%T\t%v", r, r)
-	//fmt.Println(ced.Records[:3])
-	//fmt.Println(revs.Records[:3])
-	fmt.Println(csv.Records[:3])
-}
-
+// Csv is the struct for table data.
 type Csv struct {
 	Records [][]string
 }
 
-func readCsv(n string) *Csv {
+//ReadCsv reads csv data from file.
+func ReadCsv(n string) *Csv {
 	c := new(Csv)
 	f, err := os.Open(n)
 	if err != nil {
@@ -50,7 +36,8 @@ func readCsv(n string) *Csv {
 	return c
 }
 
-func (c *Csv) getColumns() []string {
+//GetColumns gets header of the table.
+func (c *Csv) GetColumns() []string {
 	columns := make([]string, 0)
 	for i, column := range c.Records[0] {
 		ele := fmt.Sprint(i, ": ", column)
@@ -59,24 +46,21 @@ func (c *Csv) getColumns() []string {
 	return columns
 }
 
-func (c *Csv) cut(col []int) {
-	//revs := new(Csv)
+//Cut cuts the specified columns.
+func (c *Csv) Cut(col []int) {
 	for _, slice := range c.Records {
-		//tmp := make([]string, len(c.Records[pos])-len(col))
 		for j, w := range col {
-			//tmp = append(slice[:w-j], slice[w-j+1:]...)
 			if w < len(slice)-1 {
 				slice = append(slice[:w-j], slice[w-j+1:]...)
 				slice[len(slice)-1] = ""
 				slice = slice[:len(slice)-1]
 			}
 		}
-		//revs.Records[pos] = slice
 	}
-	//return revs
 }
 
-func (c *Csv) cutOne(dlcol int) *Csv {
+//CutOne cuts the specified column.
+func (c *Csv) CutOne(dlcol int) *Csv {
 	ced := new(Csv)
 	for _, slice := range c.Records {
 		tmp := make([]string, len(c.Records)-1)
