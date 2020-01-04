@@ -1,4 +1,4 @@
-package ledger
+package acc
 
 import (
 	"encoding/csv"
