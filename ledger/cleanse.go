@@ -13,9 +13,14 @@ func main() {
 	home, _ := os.UserHomeDir()
 	var p string = filepath.Join(home, "Downloads", "acc.txt")
 	csv := readCsv(p)
-	col := []int{0}
-	r := csv.cut(col)
-	fmt.Println(*r)
+	//fmt.Println(csv)
+	col := []int{0, 1, 3}
+	revs := csv.cut(col)
+	ced := csv.cutOne(1)
+	//fmt.Println(csv.getColumns())
+	//fmt.Printf("%T\t%v", r, r)
+	fmt.Println(ced.Records[:3])
+	fmt.Println(revs.Records[:3])
 
 }
 
@@ -55,15 +60,23 @@ func (c *Csv) getColumns() []string {
 }
 
 func (c *Csv) cut(col []int) *Csv {
-	revCsv := new(Csv)
-	for pos, slice := range c.Records {
-		for i, v := range slice {
-			for _, w := range col {
-				if i != w {
-					revCsv.Records[pos] = append(revCsv.Records[pos], v)
-				}
-			}
+	revs := new(Csv)
+	for _, slice := range c.Records {
+		tmp := make([]string, 0)
+		for j, w := range col {
+			tmp = append(slice[:col[w]-j], slice[col[w]-j+1:]...)
 		}
+		revs.Records = append(revs.Records, tmp)
 	}
-	return revCsv
+	return revs
+}
+
+func (c *Csv) cutOne(dlcol int) *Csv {
+	ced := new(Csv)
+	for _, slice := range c.Records {
+		tmp := make([]string, len(c.Records)-1)
+		tmp = append(slice[:dlcol], slice[dlcol+1:]...)
+		ced.Records = append(ced.Records, tmp)
+	}
+	return ced
 }
