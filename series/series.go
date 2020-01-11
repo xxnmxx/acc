@@ -3,7 +3,6 @@ package series
 type Series struct {
 	Name     string
 	elements Elements
-	t        Type
 	Err      error
 }
 
