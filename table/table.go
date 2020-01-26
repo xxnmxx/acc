@@ -1,4 +1,4 @@
-package acc
+package table
 
 import (
 	"encoding/csv"
@@ -9,7 +9,7 @@ import (
 	"text/tabwriter"
 )
 
-//Table is the 2D data structure with header.
+// Table is the 2D data structure with header.
 type Table struct {
 	header  []string
 	Records [][]string

@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/xxnmxx/acc"
+	"github.com/xxnmxx/acc/table"
 )
 
 func main() {
 	f := os.Stdin
-	t, _ := acc.CsvToTable(f)
+	t, _ := table.CsvToTable(f)
 	//t.Display()
 	t.Info()
 	d := t.Sum("借方金額")
