@@ -1,4 +1,4 @@
-package cli
+package main
 
 import (
 	"bufio"
@@ -20,4 +20,8 @@ func Input() {
 			fmt.Print(">> ")
 		}
 	}
+}
+
+func main() {
+	Input()
 }
