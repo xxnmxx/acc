@@ -35,10 +35,10 @@ func CsvToTable(i io.Reader) (table *Table, err error) {
 		}
 		t.Records = append(t.Records, rec)
 	}
-	if len(t.header) != len(t.Records[0]) {
-		fmt.Println("Unmutched Shape.")
-		os.Exit(1)
-	}
+	//if len(t.header) != len(t.Records[0]) {
+	//fmt.Println("Unmutched Shape.")
+	//os.Exit(1)
+	//}
 	return t, nil
 }
 
@@ -84,16 +84,28 @@ func (t *Table) LenOfRecs() int {
 	return len(t.Records)
 }
 
+// Shape returns shape of the table.
+func (t *Table) Shape() []int {
+	s := make([]int, 0)
+	s = append(s, t.LenOfRecs())
+	s = append(s, t.LenOfCols())
+	return s
+}
+
 // Info returns information of the table.
 func (t *Table) Info() {
 	f := os.Stdout
-	fmt.Fprintf(f, "Cols: %v\nLenOfCols: %v\tLenOfRecs: %v\t\n",
-		t.Header(), t.LenOfCols(), t.LenOfRecs())
+	fmt.Println("Header:")
+	for i, v := range t.header {
+		fmt.Fprintf(f, " %v %v,", i, v)
+	}
+	fmt.Fprintf(f, "\nLenOfCols: %v\tLenOfRecs: %v\t\n",
+		t.LenOfCols(), t.LenOfRecs())
 }
 
 //Display displays alighned table data.
 func (t *Table) Display() {
-	w := tabwriter.NewWriter(os.Stdout, 0, 8, 0, '\t', 0)
+	w := tabwriter.NewWriter(os.Stdout, 20, 8, 1, '\t', tabwriter.TabIndent|tabwriter.Debug)
 	for _, header := range t.header {
 		fmt.Fprintf(w, "%v\t", header)
 	}
