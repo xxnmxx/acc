@@ -51,15 +51,15 @@ func (d *Data) Equity() (d0, d1 float64) {
 	return d0, d1
 }
 
-func (d *Data) Ratio(i Index) (ratio float64) {
+func (d *Data) Ratio(i Index) (ratio, rb, rc, rd float64) {
 	b0, _ := d.Div()
 	c0, _, _ := d.Income()
 	d0, _ := d.Equity()
-	rb := acc.RoundDown(b0/float64(i.B), 2.0)
-	rc := acc.RoundDown(c0/float64(i.C), 2.0)
-	rd := acc.RoundDown(d0/float64(i.D), 2.0)
+	rb = acc.RoundDown(b0/float64(i.B), 2.0)
+	rc = acc.RoundDown(c0/float64(i.C), 2.0)
+	rd = acc.RoundDown(d0/float64(i.D), 2.0)
 	ratio = acc.RoundDown((rb+rc+rd)/3.0, 1.0)
-	return ratio
+	return ratio, rb, rc, rd
 }
 
 func (d *Data) ValueParJPY50(i Index) (vp50 float64) {
@@ -70,7 +70,8 @@ func (d *Data) ValueParJPY50(i Index) (vp50 float64) {
 			a = v
 		}
 	}
-	vp50 = acc.RoundDown(float64(a)*d.Ratio(i)*d.Base.Size, 1.0)
+	ratio, _, _, _ := d.Ratio(i)
+	vp50 = acc.RoundDown(float64(a)*ratio*d.Base.Size, 1.0)
 	return vp50
 }
 
