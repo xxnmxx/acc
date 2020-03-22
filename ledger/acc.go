@@ -63,15 +63,26 @@ func (c accClass) String() string {
 	}
 }
 
+type ColumnName string
+
+const (
+	accMaster ColumnName = "acc"
+)
+
 // AccMaster contains names and classes of accs.
 type AccMaster struct {
-	accName  []string
-	accClass []accClass
+	columnName ColumnName
+	accName    []string
+	accClass   []accClass
 }
 
 // LoadAccMaster loads data from a csv file.
 func LoadAccMaster(n string) *AccMaster {
-	m := new(AccMaster)
+	a := AccMaster{
+		columnName: accMaster,
+		accName:    []string{},
+		accClass:   []accClass{},
+	}
 	f, err := os.Open(n)
 	if err != nil {
 		log.Fatal(err)
@@ -86,25 +97,25 @@ func LoadAccMaster(n string) *AccMaster {
 			log.Fatal(err)
 		}
 		// Make AccMaster from rec([]string).
-		m.accName = append(m.accName, rec[0])
+		a.accName = append(a.accName, rec[0])
 		c, err := strconv.Atoi(rec[1])
 		if err != nil {
 			log.Fatal(err)
 		}
 		ac := accClass(c)
-		m.accClass = append(m.accClass, ac)
+		a.accClass = append(a.accClass, ac)
 	}
-	return m
+	return &a
 }
 
 // WriteAccMaster writes current AccMaster to csv a file.
-func (m *AccMaster) WriteAccMaster(n string) {
+func (a *AccMaster) WriteAccMaster(n string) {
 	f, err := os.Create(n)
 	if err != nil {
 		log.Fatal(err)
 	}
 	w := csv.NewWriter(f)
-	prep := m.transformDim()
+	prep := a.transformDim()
 	for _, record := range prep {
 		if err := w.Write(record); err != nil {
 			log.Fatalln("error writing record to csv", err)
@@ -116,12 +127,12 @@ func (m *AccMaster) WriteAccMaster(n string) {
 	}
 }
 
-func (m *AccMaster) transformDim() [][]string {
+func (a *AccMaster) transformDim() [][]string {
 	tfm := make([][]string, 0)
 	//temp := make([]string, 0)
-	for i, n := range m.accName {
+	for i, n := range a.accName {
 		temp := []string{}
-		c := strconv.Itoa(int(m.accClass[i]))
+		c := strconv.Itoa(int(a.accClass[i]))
 		temp = append(temp, n, c)
 		tfm = append(tfm, temp)
 	}
@@ -131,30 +142,45 @@ func (m *AccMaster) transformDim() [][]string {
 // CreateAccMaster returns accMaster.
 func CreateAccMaster() *AccMaster {
 	return &AccMaster{
-		accName:  []string{},
-		accClass: []accClass{},
+		columnName: accMaster,
+		accName:    []string{},
+		accClass:   []accClass{},
 	}
 }
 
 // AddAccMaster adds name and accClass as master data.
-func (m *AccMaster) AddAccMaster(n string, c accClass) {
+func (a *AccMaster) AddAccMaster(n string, c accClass) {
 	uniq := true
-	for _, v := range m.accName {
+	for _, v := range a.accName {
 		if n == v {
 			uniq = false
 		}
 	}
 	if uniq {
-		m.accName = append(m.accName, n)
-		m.accClass = append(m.accClass, c)
+		a.accName = append(a.accName, n)
+		a.accClass = append(a.accClass, c)
 	} else {
 		fmt.Printf("%v has already existed in the master.\n", n)
 	}
 }
 
 // CheckShape returns whether the shape is ok or not.
-func (m *AccMaster) CheckShape() bool {
-	return len(m.accName) == len(m.accClass)
+func (a *AccMaster) CheckShape() bool {
+	return len(a.accName) == len(a.accClass)
+}
+
+// ColumnName returns the name of the column.
+func (a *AccMaster) ColumnName() ColumnName {
+	return a.columnName
+}
+
+// List returns the list of the item.
+func (a *AccMaster) List() []string {
+	list := make([]string, 0)
+	for _, v := range a.accName {
+		list = append(list, v)
+	}
+	return list
 }
 
 //type rec struct {
