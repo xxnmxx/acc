@@ -14,7 +14,6 @@ func Round(num, places float64) float64 {
 func RoundUp(num, places float64) float64 {
 	shift := math.Pow(10, places)
 	return roundUpInt(num*shift) / shift
-	
 }
 
 //RoundDown returns round-downed number.
@@ -28,7 +27,6 @@ func roundUpInt(num float64) float64 {
 	t := math.Trunc(num)
 	return t + math.Copysign(1, num)
 }
-
 
 func roundInt(num float64) float64 {
 	t := math.Trunc(num)
