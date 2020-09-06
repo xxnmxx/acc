@@ -80,7 +80,7 @@ func (e *Entity) Eval() {
 }
 
 // Get methods.
-func (e *Entity) CashFlow() float64             { return e.cf }
+//func (e *Entity) CashFlow() float64             { return e.cf }
 func (e *Entity) TaxRate() float64              { return e.taxRate }
 func (e *Entity) Equity() float64               { return e.fvEquity }
 func (e *Entity) EntityValue() float64          { return e.ev }

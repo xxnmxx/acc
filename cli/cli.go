@@ -2,7 +2,9 @@ package cli
 
 import (
 	"bytes"
+	"fmt"
 	"io"
+	"os"
 )
 
 // AST
@@ -39,6 +41,7 @@ const (
 	tokenInput
 	tokenDot
 	tokenAssign
+	tokenIdentifier
 )
 
 type token struct {
@@ -48,6 +51,20 @@ type token struct {
 
 func newToken(typ tokenType, text string) Token {
 	return Token{typ: typ, text: text}
+}
+
+// Can be generalize like regKeyword(s string,typ tokenType, fn())?
+var keywords map[string]tokenType = map[string]tokenType{
+	"new": tokenNew,
+	"in":  tokenInput,
+}
+
+func lookupKeywords(kw string) tokenType {
+	typ, ok := keywords[kw]
+	if ok {
+		return typ
+	}
+	return tokenIdentifier
 }
 
 // Lexer
@@ -67,6 +84,43 @@ func newLexer(rd io.RuneReader) *lexer {
 	}
 }
 
+func (l *lexer) skipSpace() rune {
+	comment = false
+	for {
+		r := l.read()
+		if r == '\n' || r == EofRune {
+			return r
+		}
+		if r == ';' {
+			comment = true
+			continue
+		}
+		if !comment && !isSpace(r) {
+			l.back(r)
+			return r
+		}
+	}
+}
+
+func (l *lexer) skipToNewline() {
+	for l.last != '\n' && l.last != EofRune {
+		l.nextRune()
+	}
+	l.peeking = false
+}
+
+// wip
+func (l *lexer) next() *token {
+	for {
+		r := l.read()
+		switch {
+		case unicode.IsLetter(r):
+
+		default:
+		}
+	}
+}
+
 func (l *lexer) read() rune {
 	if l.peeking {
 		l.peeking = false
@@ -81,7 +135,7 @@ func (l *lexer) nextRune() rune {
 		if err != io.EOF {
 			fmt.Fprintln(os.Stderr)
 		}
-	r = EofRune
+		r = EofRune
 	}
 	l.last = r
 	return r
@@ -117,6 +171,12 @@ func (l *lexer) accum(r rune, valid func(rune) bool) {
 	}
 }
 
+//func (l *lexer) endToken() {
+//	if r := l.peek(); isAlphanum(r) || !isSpace(r) && r != '(' && r != ')' && r != '.' && r != EofRune {
+//		errorf("invalid token after %s", &l.buf)
+//	}
+//}
+
 // Can be replaced by unicode.IsSpace?
 func isSpace(r rune) {
 	return r == ' ' || r == '\t' || r == '\n' || r == '\r'
@@ -126,6 +186,9 @@ func isSpace(r rune) {
 func isNumber(r rune) {
 	return '0' <= r && r <= '9'
 }
-// Parser
-// Eval
-// Cli
+
+func isFloat(r rune) {
+}
+
+func isAlphanum(r rune) bool {
+}
